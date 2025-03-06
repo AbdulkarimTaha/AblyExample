@@ -8,8 +8,8 @@ interface AblyClientProps {
   children: ReactNode;
   user: User | null;
   clientState: [
-    Ably.Realtime | null,
-    React.Dispatch<React.SetStateAction<Ably.Realtime | null>>,
+    Ably.Realtime,
+    React.Dispatch<React.SetStateAction<Ably.Realtime>>,
   ];
 }
 
@@ -26,13 +26,22 @@ const AblyClient: React.FC<AblyClientProps> = ({
       newClient = new Ably.Realtime({
         key: Constants.ablyKey,
         clientId: user.id,
+        autoConnect: false,
       });
 
       setClient(newClient);
+      console.log('RRRRRRRRRR here',);
+      client.connection.connect();
     } else {
       if (client) {
         client.close();
-        setClient(null);
+      }else {
+        console.log('RRRRRRRRR 1');
+        newClient = new Ably.Realtime({
+          key: Constants.ablyKey,
+          autoConnect: false,
+        });
+        setClient(newClient);
       }
     }
 
@@ -43,11 +52,6 @@ const AblyClient: React.FC<AblyClientProps> = ({
       }
     };
   }, [user]);
-
-  // Return children without AblyProvider if not signed in or client not ready
-  if (!user || !client) {
-    return <>{children}</>;
-  }
 
   return <AblyProvider client={client}>{children}</AblyProvider>;
 };

@@ -4,9 +4,15 @@ import Navigation from './navigation/Navigation.tsx';
 import * as Ably from 'ably';
 import AblyProvider from './services/ably/AblyProvider.tsx';
 import useUser from './hooks/useUser.tsx';
+import Constants from './helpers/Constants.ts';
 
 const Root = () => {
-  const [client, setClient] = useState<Ably.Realtime | null>(null);
+  const newClient = new Ably.Realtime({
+    autoConnect: false,
+    key: Constants.ablyKey,
+  });
+
+  const [client, setClient] = useState<Ably.Realtime>(newClient);
 
   const {user} = useUser();
   if (client) {
